@@ -211,3 +211,109 @@ div, span은 아무 의미없음.
 
 ### strong, em, del, ins 고려
 - b는 강조할 생각없는 볼드체임
+
+---
+
+## 상호작용 컨텐츠의 올바른 용법
+
+### `<a>` vs `<button>`
+- 같은 외형이라도 a,button 요소를 구별해서 사용
+- 실형결과를 가리킬 수 있는 **URL**이 있으면 `a` 요소.
+- 참조할 URL이 없으면 `button`
+- 커서 모양이 다름에 유의
+- a가 버튼보다 지원하는 기능이 많다.
+- `cursor: pointer`는 링크(a)일때만 주는게 맞다.
+
+```html
+<a href="" target="_blank"> 는 js를 통해 부모 창의 제어권한을 획득할 수 있음. 따라서 `window.opener` 객체를 제거해야함(탭가로채기 공격)
+<a href="" target="_blank" rel="noopener noreferrer">를 통해 제어를 막을 수 있다.(최신브라우저는 자동 지원)
+```
+
+### `<details>`  vs  `<summary>`
+- `details`요소는 열림 상태일 때 정보를 표시하는위젯, **open**속성을 넣으면 열린 상태로 표시.
+- `summary` 요소는 details 요소의 나머지 부분에 대한 요약, 캡션, 범례를 의미
+
+```html
+<details open>
+   <summary>
+      ::marker
+      "details dythfks?"
+   </summary>
+</details>
+```
+
+### placeholder
+- `label`대신에 사용하지 말것. 필요한 설명은 label에 작성해야 웹 접근성 측면에서 좋다.
+
+### datalist
+- 다른 컨트롤을 위해 미리 정의된 옵션 세트를 의미한다.
+```html
+<label for="local">지역번호: <label>
+<input type="text" id="local" value="?" list="local-list">
+
+<datalist id="local-list">
+   <option value="02" label="서울"></option>
+   <option value="031" label="경기"></option>
+</datalist>
+```
+
+
+--- 
+
+
+
+## ⭐️⭐️⭐️ 이미지 마크업 최적화 ⭐️⭐️⭐️
+
+**`<picture>`**요소를 잘 사용하기 
+
+1. jpg, png : 모든 브라우저에서 지원하는 폴백 이미지.(과거의 유산)
+2. webp : jpg/png 대비 30~70% 수준의 용량(하지만 IE미지원)
+3. avif : 저용량+고품질(크롬, 안드로이드 지원)
+
+
+### `<picture>` vs `<source>` vs `<img>`
+1. `picture`
+- 1-1 picture의 type 분기 ⭐️⭐️⭐️
+- 알맞는 지원 포맷에 따른 이미지를 자동으로 아래처럼 분기처리 해줌.
+```html
+<picture>
+   <source srcset="x.avif" type="image/avif">
+   <source srcset="x.webp" type="image/webp">
+   <img src="x.jpg">
+</picture>
+```
+```js
+위의 코드는 아래와 같다.
+if(avif) x.avif
+else if(webp) x.webp
+else x.jpg
+```
+- 1-2 picture의 media 분기 ⭐️⭐️⭐️
+```html
+<picture>
+   <source srcset="x.webp" media="(max-width:960px)">
+   <img src="x.webp">
+</picture>
+```
+
+- 1-3 picture의 resolution 분기
+- 2배를 적합하게 분기처리 하고 아닌경우 1배수만 출력가능
+```html
+<picture>
+   <source srcset="2x.webp 2x, 1x.webp" type="image/webp">
+   <img srcset="2x.jpg 2x" src="1x.jpg">
+</picture>
+```
+
+2. `<img>`
+```html
+<img 
+   loading="lazy" //레이지 로딩 지원(이전에는 js로 구현했었는데 이제 지원함)
+   decoding="async" // 디코딩 지원(이미지 디코딩을 병렬로 처리해서 이미지 외 다른 콘텐츠가 빠르게 표시되는걸 도움)
+>
+```
+
+### 요약
+1. avif 포맷을 제공하고 webp, jpg를 대체 수단으로 사용할 것
+2. picture, source, img요소와 srcset, type, media 속성의 문법을 익혀둘것
+3. 빠른 로딩 속도를 통해 UX를 개선하고 이미지 전송 비용을 절약할 것
