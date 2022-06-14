@@ -383,3 +383,154 @@ iframe{
 
 **NOTE** : **수직 마진 병합 규칙**을 조심해야함. 블럭 요소 사이에서 발생하고 양수끼리, 음수끼리 만난 경우 절대 값이 큰 값이 적용된다. 양수와 음수가 만난경우 두값의 합. 마진이 합쳐지는 현상(`flow-root`)⭐️⭐️로 해결가능
 <br>-> 예외: 최상위 요소(body)의 수직마진, `flow-root`, 부모의 overflow: hidden|auto|scroll, display: inline-, float: left|right(수평정렬)
+
+
+---
+
+## float 속성
+- 이제는 컬럼을 다루는 속성이 많이 추가 되어 현재는 IE지원을 위해 사용
+1) 플로팅 요소의 너비는 수축하고 일반적인 흐름에서 벗어남
+2) 블록 요소는 플로팅 요소와 겹치고 인라인 요소는 플로팅 요소 주변으로 흐름
+3) clear, flow-root 속성으로 해제할 수 있다.(무조건 해제시켜 줘야한다.)
+4) 무엇보다 컬럼을 배치하는 속성이 아님(하지만 이렇게 제일 많이 사용)
+
+
+**NOTE** : 해제 시키기
+```css
+.container--after::after{
+    content: '';
+    display: block;
+    clear: both;
+}
+.conteiner--flowroot{
+    display: flow-root;(IE에서는 안됨)
+}
+```
+
+## Column Layout
+- `column` 프로퍼티 :  `column-gap`, `column-rule`, `columns` 설정가능
+```css
+.container{
+    max-width: 640px;
+    columns: 310px 2; //<'column-width'> || <'column-count'> 
+    column-gap: 20px;
+    column-rule: 20px solid #0002;
+    background: #eee;
+}
+```
+- `break-inside: avoid` : 박스 내부에서 길이가 길어져도 다음 컬럼으로 중간부터 넘어가지않고 끝까지 첫 컬럼에서 다 작성(디폴트는 넘어감)
+
+## 요약
+- floating은 용도에 맞게 사용하되 반드시 해제해야함. 
+- flex|grid로 컬럼배치를 제어 해야함
+
+**NOTE* : 게임추천(https://flexboxfroggy.com/#ko)(http://www.flexboxdefense.com/)
+
+
+---
+
+
+# Flex, Grid ⭐️⭐️⭐️⭐️⭐️
+**NOTE** : `IE`를 지원하지 않는다면 고려할 수 있으며 중요하다.
+- `flex`는 박스의 `크기,방향,순서,정렬,간격`을 제어하는 새로운 박스 모델.
+
+1) `justify-content`
+- 진행 축 정렬(center)시 행-> 열정렬 가능
+2) `align-items` , `align-self`, `align-content`
+- 교차 축 정렬
+- 1줄, 여러개일때 하나만, 여러줄일때 정렬
+3) `flex-direction`, `flex-wrap`, `flex-flow`
+- 감싸기
+
+## Flex 용어
+1) `flex container` : display 값이 `flex`, `inline-flex`인 박스, 내부에 흐르는 자식은 자연스럽게 `flex item`이됨
+```css
+.flex-container{
+    display: flex;
+    flex-flow: row nowrap /* 흐름 방향 + 줄 바꿈 */
+    flex-direction: row: /* 흐름 방향 */
+    flex-wrap: nowrap; /* 줄 바꿈 */
+    justify-content: flex-start; /* 진행 축 정렬 */
+    align-items: stretch; /* 교차 축 정렬 */
+    align-content: stretch; /* 여러 줄 교차 축 정렬 */
+}
+```
+2) `flex item` : `flex-container`안에 흐르는 아이템
+```css
+.flex-item{
+    flex: 0 1 auto; /* 팽창지수 + 수축지수 + 기준 크기 */
+    flex-glow: 0; /* 팽창 지수 */
+    flex-shrink: 1; /* 수축 지수 */
+    flex-basis: auto; /* 기준 크기 */
+    align-self: auto; /* 독립적 교차 축 정렬 */
+    order: 0; /* 배치 순서 */
+}
+```
+3) `free space`⭐️ : `flex-item`이 점유하는 영역을 제외하고 남은 공간(마진 아님), `flex-grow`, `flex-shrink`를 통해 flex-item으로 분배할 수 있음(FS라고 함)
+4) `main axis`⭐️ : 진행축, 플렉스 아이템 배치 방향으로써 플렉스 컨테이너에 `flex-direction`을 적용하여 설정 가능. 초기값은 `row`
+5) `cross axis`⭐️ : 교차축, 진행축의 반대(align-*)의 기준이 되는축
+
+## `flex-item`의 팽창과 수축
+```css
+flex-grow:0 /*수축되지 않음(기본값)*/
+flex-shrink : 1;
+flex-basis: auto;/* 보통 auto*/
+```
+
+1) `flex-grow`
+- 양의 FS 발생 시 플렉스 아이템의 팽창을 제어. `0또는 1`사용(2++도가능)
+- 초기값 0
+- 적용: `flex-item`
+- 0일때는 flex-container에 상관없이 보통 본인의 크기, 1일때는 container맞게 1:1 비율로 균등팽창
+- 물론 1, 2로 두개에 설정하면 1:2 배율로 팽창됨
+
+2) `flex-shrink`
+- 음의 FS발생시 플렉스 아이템의 수축을 제어한다. 보통 `0또는 1` 사용
+- 초기 값 1(건드리지 않는 걸 추천한다)
+- 적용: `flex-item`
+
+3) `flex-basis`
+- 플렉스 아이템의 진행 방향 기본 크기를 설정함으로써 FS 초기값에 영향을 준다.
+- 값 width
+- 초기 값 auto(건드리지 않는 걸 추천한다)
+- 적용: `flex-item`
+
+4) `flex`
+- flex 아이템의 팽창, 수축, 기본 크기 를 제어하는 **단축 속성**
+- 값: none | [<'flex-grow'> <'flex-shrink'>? || <'flex-basis'>] 
+- 초기 값: 0 1 [auto]
+
+**NOTE** : 실무에서 사용할 확률 높은 `flex`⭐️⭐️
+```css
+.item{ flex:1 }⭐️⭐️⭐️⭐️
+```
+
+## `flex-item`의 방향과 순서
+```css
+flex-direction : row | column
+flex-wrap : nowrap(기본값, 줄바꿈 자동으로 안됨) | wrap(줄바꿈) 
+flex-flow : <'flex-direction'> || <'flex=wrap'> ⭐️ /* 단축 속성 */
+order : 순서변경
+```
+**NOTE** : 빈번하게 사용되는 코드
+```css
+flex-flow: row wrap;
+flex-flow: column wrap;
+```
+
+
+## flex-item의 정렬과 간격
+```css
+justify-content: center⭐️ | space-between⭐️ | flex-start(초기값) | space-around | space-evenly | flex-end
+align-items: center⭐️ (자기크기로 중앙정렬) | stretch(초기값)⭐️(교차축으로 꽉채워서 자동으로 늘어남) | flex-start 
+align-self: auto | cneter | stretch (아이템 중 단 1개만 적용)
+align-content: center⭐️ | sapce-between⭐️ | space-around | space-evenly | flex-end(align-items와 다르게 여러줄일때)
+gap⭐️ : margin과 비슷, <'column width'> || <'row width'> (10px 20px)
+```
+
+### 요약
+- `flex` 단축 속성 권장 
+- `justify-content` , `align-items` 속성을 통해 정렬방식을 이해하고 align-self, align-content, flex-direction, flex-wrap등을 학습할것
+- 언급 안했던 reverse 사용하지 말것 
+
+**NOTE**: [게임 예제](https:/cssgridgarden.com/#ko)
