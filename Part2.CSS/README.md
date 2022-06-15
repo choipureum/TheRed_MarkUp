@@ -430,7 +430,7 @@ iframe{
 ---
 
 
-# Flex, Grid ⭐️⭐️⭐️⭐️⭐️
+# Flex ⭐️⭐️⭐️⭐️⭐️
 **NOTE** : `IE`를 지원하지 않는다면 고려할 수 있으며 중요하다.
 - `flex`는 박스의 `크기,방향,순서,정렬,간격`을 제어하는 새로운 박스 모델.
 
@@ -534,3 +534,191 @@ gap⭐️ : margin과 비슷, <'column width'> || <'row width'> (10px 20px)
 - 언급 안했던 reverse 사용하지 말것 
 
 **NOTE**: [게임 예제](https:/cssgridgarden.com/#ko)
+
+
+---
+
+# Grid ⭐️⭐️⭐️⭐️⭐️
+- 셀의 병합에서 많이 사용된다.
+- 격자를 통해 내용의 크기와 위치를 제어하는 방법
+- flex와 다르게 2개의 축을 다룬다.
+
+- `grid` : 트랙의 수와 크기, 컨테이너에 적용
+- `grid-area` : 아이템의 배치와 병합, 아이템에 적용
+
+**그리드 용어**
+```css
+gird container
+grid item
+grid line : 격자를 나누는 선
+grid track : 
+grid cell, grid area
+gap : 아이템 사이의 마진 느낌
+
+gird-template-[rows, columns, areas] : 명시적 그리드 - 트랙의 크기와 수량을 분명하게 선언한 그리드
+grid-auto-[flow, rows, columns] :  암시적 그리드 - 명시적 그리드 외부에 배치되어 흐름 방향과 크기를 결정하는 그리드
+```
+
+### grid container, grid item 역할
+1) `grid-container` 역할
+- 트랙의 수량과 크기를 명시(`grid-template-*`)
+- 아이템 배치 방향(`grid-auto-flow`)
+- 암시적 트랙 크기(`grid-auto-*`)
+**선언방법**
+```css
+.container{
+    display: grid | inline-grid;
+    grid: 80px 1fr / 120px 1fr; /* grid-template-rows , grid-template-column */⭐️⭐️
+    /* grid : auto / 40px repeat(2, 1fr 2fr); */ repleat함수로 크기를 반복할 수 있다.
+    /* grid : 1fr 2fr / auto-flow; */ row,column 지정된 방향으로 배치방향으로 진행
+    /* grid: '. . .'; /* 트랙 생성*/ - 선언하지 않는 방법으로 거의 안씀(익명의 컬럼 생성)
+}
+```
+
+2) `grid-item` 역할
+- item의 배치와 병합(`grid-row-start, grid-column-start, grid-row-end, grid-column-end , grid-area`)
+```css
+.container{
+    display: grid;
+    grid: auto / repeat(3,1fr);
+}
+.item1 { 
+    grid-area: 2/3 /* row, column start가 들어간 것 (2,3)에서 1번이 시작한다*/
+}
+/* grid item 배치,병합*/⭐️⭐️⭐️
+.itme2{
+    grid-area: 2 / 2 / span 3 / span 2 /* 2,2 시작 로우(세로) 3으로 병합, 컬럼(가로) 2개 병합*/
+}
+```
+
+### Grid dense(밀집)
+- 비어있는 공간을 배운다.
+- `auto-flow`와 함께 사용 ⭐️
+- 채우지 못한 빈영역이 있으면 흐름 방향을 거슬러 올라 트랙을 채운다.
+```css
+.container{
+    display: grid;
+    grid: auto-flow dense / repeate(3, 1fr); /* 채우지 못한 부분을 채워줌 */⭐️
+}
+```
+
+### grid-auto-fill/fit
+- 트랙의 최대 크기가 autodlaus fill 또는 fit으로 채운다 (잘 사용하진 않음)
+
+
+[gird 레퍼런스 링크](https://naradesign.github.io/css-grid-layout.html)
+
+---
+
+## css를 이용해서 img 대체해서 웹 성능 끌어올리기 ⭐️⭐️ 
+- `스프라이트 이미지` : 여러개의 이미지를 한장에 담아 사용하기
+- 보통 스프라이트 이미지를 많이 사용하지만 css로 이미지를 그릴 수 있다면 좋다.
+
+## 삼각형 그리기
+```css
+p::before{
+    content:'';
+    float: left;
+    vertical-align: middle;
+    margin-right: 8px;
+    border: 40px solid transparent;
+    border-left-color: red;⭐️
+}
+```
+
+
+## 꺽쇠, 화살표 만들기
+1) 꺽쇠(✔️)
+```css
+p::before{
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 8px;
+    margin-right: 8px;
+    border: 2px solid red;
+    border-top:0;
+    border-right: 0;
+    transform: rotate(-45deg);
+    transform-origin: 25% 25%;
+}
+```
+2) 화살표(->)
+```css
+.arrow::after{
+    width: 48px;
+    height: 1px;
+    background: 1px;
+    background: var(--color);
+    transform-origin: 0 100%;
+    transform: rotate(45deg);
+}
+.arrow--left { transform: rotate(-45deg)}
+...
+```
+
+## Spinner 만들기
+```css
+.spinner::after{
+    content: '';
+    position: absolute;
+    box-sizing: border-box;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 8px solid silver;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin{
+    to{ transform: rotate(360deg) }
+}
+```
+
+## 격자 배경 만들기
+```css
+:root{
+    background:
+        linear-gradient(to bottom, transparent 47px, silver 47px) 0 0 / 100vs 48px repeat-y,
+        linear-gradient(to right, transparent 47px, silver 47px) 0 0 / 48px 100vh repeat-x,
+        black;(색상은 마지막에 작성해야한다.)
+}
+```
+
+## 체커배경 만들기(체스판 모양)
+```css
+:root{
+    background-image: 
+        linear-gradient(45deg, silver 25%, transparent 25%), /* 삼각형 하나*/
+        linear-gradient(45deg, transparent 75%, silver 25%), /* 삼각형 하나*/
+        linear-gradient(-45deg, silver 25%, transparent 25%), /* 삼각형 하나*/
+        linear-gradient(-45deg, silver 75%, silver 75%); /* 삼각형 하나*/
+    backgrond-size: 20px 20px;
+    background-position: 0,0 -10px 10px, 0 -10px, 10px 0;
+}
+```
+
+## 햄버거 아이콘만들기
+```css
+.navBtn::before{
+    top: 14px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 24px;
+    height: 4px;
+    background: black;
+    box-shadow: 0 8px 0 black, 0 16px 0 black; /* 첫번째 바만 만들고 두세번째는 그림자로 떨어뜨림 */
+}
+/* 햄버거 내부 빨간 점 추가 (레진 한정)*/
+.navBtn::after{
+    top: 10px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px white;
+    background: red;
+}
+```
