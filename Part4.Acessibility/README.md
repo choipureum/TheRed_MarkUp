@@ -309,3 +309,86 @@ step : 현재 단계오 일치하는 시각적으로 강조한 링크 ⭐️
 </ul>
 ```
 
+- `aria-hidden` : 보조기기에 정보를 전달하지 않는다, 접근성 API 차단(true)/사용(false)
+```html
+<body>
+    <div class="container" aria-hidden="true">
+        //보조기기가 무시하는 영역
+    </div>
+    ...
+</body>
+```
+
+- `aria-invalid` : 주로 `<input>`에 사용. 사용자가 입력한 값이 요구하는 형식과 일치하는지 여부를 선언<br>
+cf) false(오류없음) 인 경우 그냥 선언하지 않고 true인 경우만 선언해준다
+```html
+<label for="email">이메일</label>
+<input id="email" type="email" required value="..." aria-invalid="true" aria-errormessage="email-error-msg">
+<p id="email-error-msg" aria-role="alert" aria-live="assertive">이메일 형식이 유효하지 않습니다.</p>
+```
+
+
+3) ARIA - 속성(properties)
+```html
+<element aria-controls="ID reference list"> ⭐️
+<element aria-live="polite | assertive | off(default)"> ⭐️
+<element aria-labelledby="ID reference list"> ⭐️
+<element aria-label="string"> 
+<element aria-describedby="ID reference list"> ⭐️
+<element aria-errormessage="ID reference"> ⭐️
+<element aria-modal="true | false(default)"> ⭐️
+```
+
+- `aria-controls` : `role="tab"`, `aria-haspopup`, `aria-expanded`속성과 함께 명시. `<button>`이 무엇을 제어하는지 명시한다.
+```html
+<button type="button" id="mon-anchor" aria-controles="mon" role="tab" aria-selected="true">월</button>
+
+<button type="button" aria-haspopup="dialog" aria-controls="login-dialog">로그인</button>
+
+<button type="button" aria-controls="answer-99" aria-expanded="false">보너스 코인은 언제 소진되나요</button>
+```
+
+- `aria-live`: 실시간으로 내용을 갱신하는 영역(polite-중요도 낮음, assertive-중요도 높음)
+```html
+<div role="alert" aria-live="assertive">
+    <p>로그인 후 이용할 수 있습니다.</p>
+</div>
+```
+
+- `aria-labelledby` : label을 대체한다. ID값을 이용하여 내용을 참조(hx, a, button 요소를 참조하면 적절하다.)
+```html
+<section aria-labelledby="LZ-PATH" hidden>
+    <h2 id="LZ-PATH">레진패스란?</h2>
+    <p>이 작품이 유료 에피소드 열람 시 자동으로 구매합니다</p>
+</section>
+
+<a id="LZ-PATH" href="#LZ-PATH-TEXT">레진 패스란</a>
+<div id="LZ-PATH-TEXT" aria-labelledby="LZ-PATH" hidden>
+    <p>이 작품의 유료 에피소드 열람 시 자동으로 구매합니다.</p>
+</div>
+```
+
+- `aria-label` : 간결한 설명/ 그래도 `aria-labelledby`를 왠만해선 적용해라
+- `aria-describedby` : 자세한 설명, 장황한 설명(툴팁, 인풋 등에 적용)
+```html
+<button aria-describedby="TIP-DEL">게시물 삭제</button>
+<p id="TIP-DEL" role="tooltip" hidden>게시물 삭제 후 복원할 수 없음.</p>
+```
+
+- `aria-errormessage`: `<input>` 요소에 선언, `aria-invalid`와 보통 함께사용 / 오류 원인과 해결방법을 포함해야한다.
+```html
+<label for="email">이메일</label>
+<input id="email" type="email" required value="..." aria-invalid="true" aria-errormessage="email-error-msg">
+<p id="email-error-msg" aria-role="alert" aria-live="assertive">이메일 형식이 유효하지 않습니다.</p>
+```
+
+- `aria-modal` : 요소가 모달인지 전달
+```html
+<div role="alertdialog" aria-modal="true" aria-labelledby="TITLE" aria-describedby="DESCRIPTION">
+    <h2 id="TITLE">레진 패스 안내</h2>
+    <p id="DESCRIPTION">이 작품의 유료 에피소드 열람 시 자동으로 구매합니다. 레진패스를 적용하시겠습니까?</p>
+</div>
+```
+
+## 요약
+- ARIA는 역할,상태,속성 정보를 통해 HTML의 웹접근성 문제를 해결하는 방법이다.
